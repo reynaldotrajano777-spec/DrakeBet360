@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PrimeBet - Plataforma Profissional</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial;}
+body{background:#0f172a;color:white;}
+header{
+    background:#111827;
+    padding:15px 30px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+.logo{font-size:22px;font-weight:bold;color:#22c55e;}
+nav a{
+    margin:0 10px;
+    color:white;
+    text-decoration:none;
+    font-size:14px;
+}
+nav a:hover{color:#22c55e;}
+.balance{color:#22c55e;font-weight:bold;}
+.container{padding:40px;}
+.section{margin-bottom:50px;}
+h2{margin-bottom:20px;color:#22c55e;}
+.grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+    gap:20px;
+}
+.card{
+    background:#1e293b;
+    padding:20px;
+    border-radius:10px;
+    text-align:center;
+    transition:0.3s;
+}
+.card:hover{transform:translateY(-5px);}
+button{
+    background:#22c55e;
+    border:none;
+    padding:8px 15px;
+    margin-top:10px;
+    color:black;
+    border-radius:5px;
+    cursor:pointer;
+    font-weight:bold;
+}
+input{
+    padding:8px;
+    margin:5px;
+    border-radius:5px;
+    border:none;
+}
+.footer{
+    background:#111827;
+    padding:20px;
+    text-align:center;
+}
+.hidden{display:none;}
+.admin-panel{
+    background:#1e293b;
+    padding:20px;
+    border-radius:10px;
+}
+</style>
+</head>
+<body>
+
+<header>
+<div class="logo">PrimeBet</div>
+<nav>
+<a href="#home">Home</a>
+<a href="#casino">Cassino</a>
+<a href="#sports">Esportes</a>
+<a href="#roulette">Roleta</a>
+<a href="#account">Conta</a>
+</nav>
+<div>Saldo: <span class="balance" id="balance">R$1000</span></div>
+</header>
+
+<div class="container">
+
+<section id="home" class="section">
+<h2>Bem-vindo à PrimeBet</h2>
+<p>Plataforma profissional de apostas (modo demonstração)</p>
+<button onclick="deposit()">Depositar +500</button>
+</section>
+
+<section id="casino" class="section">
+<h2>🎰 Cassino</h2>
+<div class="grid">
+<div class="card">Slots</div>
+<div class="card">Blackjack</div>
+<div class="card">Baccarat</div>
+<div class="card">Crash</div>
+</div>
+</section>
+
+<section id="sports" class="section">
+<h2>⚽ Apostas Esportivas</h2>
+<div class="grid">
+<div class="card">
+<p>Futebol</p>
+<button onclick="bet('Futebol')">Apostar R$50</button>
+</div>
+<div class="card">
+<p>Basquete</p>
+<button onclick="bet('Basquete')">Apostar R$50</button>
+</div>
+<div class="card">
+<p>Tênis</p>
+<button onclick="bet('Tênis')">Apostar R$50</button>
+</div>
+</div>
+</section>
+
+<section id="roulette" class="section">
+<h2>🎡 Roleta</h2>
+<button onclick="spin()">Girar Roleta (R$50)</button>
+<p id="rouletteResult"></p>
+</section>
+
+<section id="account" class="section">
+<h2>👤 Conta</h2>
+<div id="auth">
+<input type="text" id="username" placeholder="Usuário">
+<input type="password" id="password" placeholder="Senha">
+<button onclick="login()">Login</button>
+</div>
+<div id="logged" class="hidden">
+<p>Bem-vindo, <span id="userDisplay"></span></p>
+<h3>Histórico</h3>
+<ul id="history"></ul>
+</div>
+</section>
+
+<section class="section">
+<h2>🛠 Painel Admin (Visual)</h2>
+<div class="admin-panel">
+<p>Total Usuários: 1 (demo)</p>
+<p>Total Apostas: <span id="totalBets">0</span></p>
+<p>Saldo em Plataforma: R$ <span id="platformBalance">1000</span></p>
+</div>
+</section>
+
+</div>
+
+<div class="footer">
+<p>+18 | Jogo Responsável | Plataforma Demonstrativa</p>
+</div>
+
+<script>
+let balance = 1000;
+let totalBets = 0;
+let historyList = [];
+
+function updateUI(){
+    document.getElementById("balance").innerText = "R$"+balance;
+    document.getElementById("totalBets").innerText = totalBets;
+    document.getElementById("platformBalance").innerText = balance;
+}
+
+function deposit(){
+    balance += 500;
+    updateUI();
+}
+
+function bet(type){
+    if(balance < 50){
+        alert("Saldo insuficiente");
+        return;
+    }
+    balance -= 50;
+    totalBets++;
+    historyList.push("Aposta em "+type+" - R$50");
+    renderHistory();
+    updateUI();
+}
+
+function spin(){
+    if(balance < 50){
+        alert("Saldo insuficiente");
+        return;
+    }
+    balance -= 50;
+    let number = Math.floor(Math.random()*37);
+    document.getElementById("rouletteResult").innerText = "Número sorteado: "+number;
+    if(number % 2 === 0){
+        balance += 100;
+        historyList.push("Roleta - Ganhou R$100");
+    } else {
+        historyList.push("Roleta - Perdeu R$50");
+    }
+    totalBets++;
+    renderHistory();
+    updateUI();
+}
+
+function login(){
+    let user = document.getElementById("username").value;
+    if(user){
+        document.getElementById("auth").classList.add("hidden");
+        document.getElementById("logged").classList.remove("hidden");
+        document.getElementById("userDisplay").innerText = user;
+    }
+}
+
+function renderHistory(){
+    let list = document.getElementById("history");
+    list.innerHTML="";
+    historyList.forEach(item=>{
+        let li=document.createElement("li");
+        li.textContent=item;
+        list.appendChild(li);
+    });
+}
+
+updateUI();
+</script>
+
+</body>
+</html>
